@@ -237,6 +237,23 @@ export default function WordlePage() {
     ["Z", "X", "C", "V", "B", "N", "M"],
   ];
 
+  // Add this check before the return statement
+  if (savedGameState === undefined || !todayDate) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-md text-center">
+          <h1 className="text-4xl font-bold mb-8">WORDLE</h1>
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-gray-100"></div>
+            <p className="text-gray-600 dark:text-gray-400">
+              Loading today&apos;s puzzle...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 relative">
       <div className="w-full max-w-md pb-8">
