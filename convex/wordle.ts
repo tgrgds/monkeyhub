@@ -98,7 +98,7 @@ export const saveGameStateInternal = internalMutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     const existing = await ctx.db
-      .query("gameStates")
+      .query("wordleGameStates")
       .withIndex("by_user_and_date", (q) =>
         q.eq("userId", user._id).eq("date", args.date)
       )
@@ -111,7 +111,7 @@ export const saveGameStateInternal = internalMutation({
       });
       return existing._id;
     } else {
-      const id = await ctx.db.insert("gameStates", {
+      const id = await ctx.db.insert("wordleGameStates", {
         userId: user._id,
         date: args.date,
         guesses: args.guesses,
@@ -279,7 +279,7 @@ export const getGameStateInternal = internalQuery({
   },
   handler: async (ctx, args) => {
     const gameState = await ctx.db
-      .query("gameStates")
+      .query("wordleGameStates")
       .withIndex("by_user_and_date", (q) =>
         q.eq("userId", args.userId).eq("date", args.date)
       )
@@ -298,7 +298,7 @@ export const getGameState = query({
     const user = await getCurrentUserOrThrow(ctx);
 
     const gameState = await ctx.db
-      .query("gameStates")
+      .query("wordleGameStates")
       .withIndex("by_user_and_date", (q) =>
         q.eq("userId", user._id).eq("date", args.date)
       )

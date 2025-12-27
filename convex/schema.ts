@@ -14,7 +14,7 @@ export default defineSchema({
     printDate: v.string(),
     daysSinceLaunch: v.number(),
   }).index("by_date", ["date"]),
-  gameStates: defineTable({
+  wordleGameStates: defineTable({
     userId: v.string(),
     date: v.string(), // Format: YYYY-MM-DD
     guesses: v.array(
