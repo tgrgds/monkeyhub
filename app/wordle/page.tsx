@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAction, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { RedirectToSignIn } from "@clerk/nextjs";
+// import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 type Feedback = "correct" | "present" | "absent" | null;
 
@@ -20,6 +22,8 @@ export default function WordlePage() {
   const [todayDate, setTodayDate] = useState("");
   const [shareSuccess, setShareSuccess] = useState(false);
   const isGameOverRef = useRef(false);
+
+  // const { isAuthenticated } = useCurrentUser();
 
   const checkGuess = useAction(api.wordle.checkGuess);
   const savedGameState = useQuery(
@@ -237,7 +241,7 @@ export default function WordlePage() {
     ["Z", "X", "C", "V", "B", "N", "M"],
   ];
 
-  // Add this check before the return statement
+  // loading state
   if (savedGameState === undefined || !todayDate) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
@@ -252,6 +256,10 @@ export default function WordlePage() {
         </div>
       </div>
     );
+  }
+
+  if (savedGameState === null) {
+    return <RedirectToSignIn />;
   }
 
   return (

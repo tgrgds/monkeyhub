@@ -6,7 +6,7 @@ import {
 } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import { getCurrentUserOrThrow } from "./users";
+import { getCurrentUser, getCurrentUserOrThrow } from "./users";
 
 // Internal query to get puzzle from database
 export const getPuzzleFromDb = internalQuery({
@@ -137,11 +137,6 @@ export const checkGuess = action({
     isCorrect: boolean;
     isGameOver: boolean;
   }> => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
     // First, try to get puzzle from database
     let puzzle = await ctx.runQuery(internal.wordle.getPuzzleFromDb, {
       date: args.date,
@@ -189,7 +184,6 @@ export const checkGuess = action({
     const currentState = await ctx.runQuery(
       internal.wordle.getGameStateInternal,
       {
-        userId: identity.subject,
         date: args.date,
       }
     );
@@ -274,14 +268,15 @@ export const checkGuess = action({
 // Internal query to get game state (used by actions)
 export const getGameStateInternal = internalQuery({
   args: {
-    userId: v.string(),
     date: v.string(),
   },
   handler: async (ctx, args) => {
+    const user = await getCurrentUserOrThrow(ctx);
+
     const gameState = await ctx.db
       .query("wordleGameStates")
       .withIndex("by_user_and_date", (q) =>
-        q.eq("userId", args.userId).eq("date", args.date)
+        q.eq("userId", user._id).eq("date", args.date)
       )
       .first();
 
@@ -295,7 +290,11 @@ export const getGameState = query({
     date: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx);
+    const user = await getCurrentUser(ctx);
+
+    if (!user) {
+      return null;
+    }
 
     const gameState = await ctx.db
       .query("wordleGameStates")
