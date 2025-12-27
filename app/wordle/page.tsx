@@ -258,10 +258,6 @@ export default function WordlePage() {
     );
   }
 
-  if (savedGameState === null) {
-    return <RedirectToSignIn />;
-  }
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 relative">
       <div className="w-full max-w-md pb-8">
